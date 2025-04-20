@@ -7,7 +7,6 @@ import {Input} from '@/components/ui/input';
 import {Label} from '@/components/ui/label';
 import {Card, CardContent, CardDescription, CardHeader, CardTitle} from '@/components/ui/card';
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from '@/components/ui/select';
-import {suggestTShirtSize} from '@/ai/flows/suggest-t-shirt-size';
 
 interface FeatureInputProps {
   onFeatureAdd: (feature: {
@@ -17,9 +16,14 @@ interface FeatureInputProps {
     size: string;
     hours: number;
   }) => void;
+  onAISuggestion: (featureName: string) => Promise<{
+    suggestedTShirtSize: string;
+    totalHours: number;
+    reasoning: string;
+  }>;
 }
 
-export default function FeatureInput({onFeatureAdd}: FeatureInputProps) {
+export default function FeatureInput({onFeatureAdd, onAISuggestion}: FeatureInputProps) {
   const [module, setModule] = useState('');
   const [name, setName] = useState('');
   const [multiplier, setMultiplier] = useState<number | undefined>(1);
@@ -46,12 +50,21 @@ export default function FeatureInput({onFeatureAdd}: FeatureInputProps) {
   const handleAISuggestion = async () => {
     if (name) {
       try {
-        const aiSuggestion = await suggestTShirtSize({featureDescription: name});
-        setSize(aiSuggestion.suggestedTShirtSize);
-        toast({
-          title: 'AI Suggestion',
-          description: aiSuggestion.reasoning,
-        });
+        const aiSuggestion = await onAISuggestion(name);
+        if (aiSuggestion) {
+          const {suggestedTShirtSize, reasoning} = aiSuggestion;
+          setSize(suggestedTShirtSize);
+          toast({
+            title: 'AI Suggestion',
+            description: reasoning,
+          });
+        } else {
+          toast({
+            title: 'AI Suggestion Failed',
+            description: 'Failed to get AI suggestion. Please try again.',
+            variant: 'destructive',
+          });
+        }
       } catch (error: any) {
         console.error('AI Suggestion Error:', error);
         toast({

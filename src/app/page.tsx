@@ -11,6 +11,8 @@ import {Label} from '@/components/ui/label';
 import {Input} from '@/components/ui/input';
 import {Textarea} from '@/components/ui/textarea';
 import {Switch} from '@/components/ui/switch';
+import {suggestTShirtSize} from '@/ai/flows/suggest-t-shirt-size';
+import {Button} from '@/components/ui/button';
 
 export default function Home() {
   const [features, setFeatures] = useState<
@@ -32,6 +34,27 @@ export default function Home() {
   const [qaComments, setQAComments] = useState('');
   const [databaseComments, setDatabaseComments] = useState('');
 
+  const [configuration, setConfiguration] = useState({
+    XS: 10,
+    S: 20,
+    M: 30,
+    L: 40,
+    XL: 50,
+    userSetup: '',
+    codeCoverage: '',
+    cssPreprocessor: '',
+    accessibilityConsiderations: '',
+    performanceTargets: '',
+    securityConsiderations: '',
+    xsMultiplier: 0.5,
+    sMultiplier: 1,
+    mMultiplier: 2,
+    lMultiplier: 3,
+    xlMultiplier: 5,
+    techStack: '',
+    comments: '',
+  });
+
   const handleFeatureAdd = (newFeature: {
     module: string;
     name: string;
@@ -45,22 +68,56 @@ export default function Home() {
   useEffect(() => {
     const calculateTotalEffort = () => {
       const effortValues: {[key: string]: number} = {
-        XS: 1,
-        S: 2,
-        M: 4,
-        L: 8,
-        XL: 16,
+        XS: configuration.XS,
+        S: configuration.S,
+        M: configuration.M,
+        L: configuration.L,
+        XL: configuration.XL,
       };
 
       let calculatedEffort = 0;
       features.forEach((feature) => {
-        calculatedEffort += effortValues[feature.size] * feature.multiplier * feature.hours || 0;
+        calculatedEffort +=
+          effortValues[feature.size] * feature.multiplier * feature.hours || 0;
       });
       setTotalEffort(calculatedEffort);
     };
 
     calculateTotalEffort();
-  }, [features]);
+  }, [features, configuration]);
+
+  const handleAISuggestion = async (featureName: string) => {
+    if (featureName) {
+      try {
+        const aiSuggestion = await suggestTShirtSize({featureDescription: featureName});
+        const {suggestedTShirtSize, totalHours, reasoning} = aiSuggestion;
+
+        const effortValues: {[key: string]: number} = {
+          XS: configuration.XS,
+          S: configuration.S,
+          M: configuration.M,
+          L: configuration.L,
+          XL: configuration.XL,
+        };
+
+        setTotalEffort(effortValues[suggestedTShirtSize] * totalHours);
+        return {suggestedTShirtSize, totalHours, reasoning};
+      } catch (error: any) {
+        console.error('AI Suggestion Error:', error);
+        return {
+          suggestedTShirtSize: '',
+          totalHours: 0,
+          reasoning: error.message || 'Failed to get AI suggestion. Please try again.',
+        };
+      }
+    } else {
+      return {
+        suggestedTShirtSize: '',
+        totalHours: 0,
+        reasoning: 'Please enter a feature description to get an AI suggestion.',
+      };
+    }
+  };
 
   return (
     <div className="container mx-auto p-4 space-y-4">
@@ -213,17 +270,19 @@ export default function Home() {
         <TabsContent value="featureInput" className="space-y-4">
           {includeFrontend && (
             <>
-              <FeatureInput onFeatureAdd={handleFeatureAdd} />
+              <FeatureInput onFeatureAdd={handleFeatureAdd} onAISuggestion={handleAISuggestion} />
               <FeatureList features={features} />
             </>
           )}
           <EffortCalculation totalEffort={totalEffort} />
         </TabsContent>
         <TabsContent value="configuration" className="space-y-4">
-          <Configuration />
+          <Configuration
+            configuration={configuration}
+            setConfiguration={setConfiguration}
+          />
         </TabsContent>
       </Tabs>
     </div>
   );
 }
-

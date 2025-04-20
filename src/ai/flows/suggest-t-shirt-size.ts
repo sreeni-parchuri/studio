@@ -22,6 +22,7 @@ const SuggestTShirtSizeOutputSchema = z.object({
   reasoning: z
     .string()
     .describe('The reasoning behind the suggested T-shirt size estimate.'),
+  totalHours: z.number().describe('The total estimated hours for the feature.'),
 });
 export type SuggestTShirtSizeOutput = z.infer<typeof SuggestTShirtSizeOutputSchema>;
 
@@ -46,15 +47,16 @@ const prompt = ai.definePrompt({
       reasoning: z
         .string()
         .describe('The reasoning behind the suggested T-shirt size estimate.'),
+      totalHours: z.number().describe('The total estimated hours for the feature.'),
     }),
   },
   prompt: `You are an experienced project manager estimating frontend development effort.
 
-Based on the following feature description, suggest a T-shirt size (XS, S, M, L, XL) estimate for the feature and explain your reasoning.
+Based on the following feature description, suggest a T-shirt size (XS, S, M, L, XL) estimate for the feature, estimate the total hours, and explain your reasoning.
 
 Feature Description: {{{featureDescription}}}
 
-Consider factors like complexity, scope, and potential risks when determining the T-shirt size.
+Consider factors like complexity, scope, and potential risks when determining the T-shirt size and total hours.
 `,
 });
 

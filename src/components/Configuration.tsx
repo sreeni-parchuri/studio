@@ -20,30 +20,12 @@ import {Textarea} from '@/components/ui/textarea';
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from '@/components/ui/table';
 import {useState} from 'react';
 
-const defaultConfiguration = {
-  userSetup: '',
-  codeCoverage: '',
-  cssPreprocessor: '',
-  accessibilityConsiderations: '',
-  performanceTargets: '',
-  securityConsiderations: '',
-  xsMultiplier: '',
-  sMultiplier: '',
-  mMultiplier: '',
-  lMultiplier: '',
-  xlMultiplier: '',
-  techStack: '',
-  comments: '',
-  xsHours: '',
-  sHours: '',
-  mHours: '',
-  lHours: '',
-  xlHours: '',
-};
+interface ConfigurationProps {
+  configuration: any;
+  setConfiguration: (config: any) => void;
+}
 
-export default function Configuration() {
-  const [configuration, setConfiguration] = useState(defaultConfiguration);
-
+export default function Configuration({configuration, setConfiguration}: ConfigurationProps) {
   const handleChange = (
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
@@ -66,6 +48,76 @@ export default function Configuration() {
             </TableRow>
           </TableHeader>
           <TableBody>
+            <TableRow>
+              <TableCell>
+                <Label htmlFor="XS">XS Hours</Label>
+              </TableCell>
+              <TableCell>
+                <Input
+                  type="number"
+                  id="XS"
+                  value={configuration.XS}
+                  onChange={handleChange}
+                  placeholder="e.g., 10"
+                />
+              </TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell>
+                <Label htmlFor="S">S Hours</Label>
+              </TableCell>
+              <TableCell>
+                <Input
+                  type="number"
+                  id="S"
+                  value={configuration.S}
+                  onChange={handleChange}
+                  placeholder="e.g., 20"
+                />
+              </TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell>
+                <Label htmlFor="M">M Hours</Label>
+              </TableCell>
+              <TableCell>
+                <Input
+                  type="number"
+                  id="M"
+                  value={configuration.M}
+                  onChange={handleChange}
+                  placeholder="e.g., 30"
+                />
+              </TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell>
+                <Label htmlFor="L">L Hours</Label>
+              </TableCell>
+              <TableCell>
+                <Input
+                  type="number"
+                  id="L"
+                  value={configuration.L}
+                  onChange={handleChange}
+                  placeholder="e.g., 40"
+                />
+              </TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell>
+                <Label htmlFor="XL">XL Hours</Label>
+              </TableCell>
+              <TableCell>
+                <Input
+                  type="number"
+                  id="XL"
+                  value={configuration.XL}
+                  onChange={handleChange}
+                  placeholder="e.g., 50"
+                />
+              </TableCell>
+            </TableRow>
             <TableRow>
               <TableCell>
                 <Label htmlFor="userSetup">User Setup Considerations</Label>
@@ -221,76 +273,6 @@ export default function Configuration() {
                   value={configuration.xlMultiplier}
                   onChange={handleChange}
                   placeholder="e.g., 5"
-                />
-              </TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell>
-                <Label htmlFor="xsHours">XS Hours</Label>
-              </TableCell>
-              <TableCell>
-                <Input
-                  type="number"
-                  id="xsHours"
-                  value={configuration.xsHours}
-                  onChange={handleChange}
-                  placeholder="e.g., 10"
-                />
-              </TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell>
-                <Label htmlFor="sHours">S Hours</Label>
-              </TableCell>
-              <TableCell>
-                <Input
-                  type="number"
-                  id="sHours"
-                  value={configuration.sHours}
-                  onChange={handleChange}
-                  placeholder="e.g., 20"
-                />
-              </TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell>
-                <Label htmlFor="mHours">M Hours</Label>
-              </TableCell>
-              <TableCell>
-                <Input
-                  type="number"
-                  id="mHours"
-                  value={configuration.mHours}
-                  onChange={handleChange}
-                  placeholder="e.g., 30"
-                />
-              </TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell>
-                <Label htmlFor="lHours">L Hours</Label>
-              </TableCell>
-              <TableCell>
-                <Input
-                  type="number"
-                  id="lHours"
-                  value={configuration.lHours}
-                  onChange={handleChange}
-                  placeholder="e.g., 40"
-                />
-              </TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell>
-                <Label htmlFor="xlHours">XL Hours</Label>
-              </TableCell>
-              <TableCell>
-                <Input
-                  type="number"
-                  id="xlHours"
-                  value={configuration.xlHours}
-                  onChange={handleChange}
-                  placeholder="e.g., 50"
                 />
               </TableCell>
             </TableRow>
