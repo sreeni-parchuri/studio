@@ -58,8 +58,8 @@ export default function Dashboard() {
   const createProject = async () => {
     try {
       const docRef = await addDoc(collection(db, 'projects'), newProject);
-+     const createdProject: Project = {id: docRef.id, ...newProject};
-+     setProjects((prevProjects) => [...prevProjects, createdProject]);
+      const createdProject: Project = {id: docRef.id, ...newProject};
+      setProjects((prevProjects) => [...prevProjects, createdProject]);
       setNewProject({
         projectName: '',
         projectOwner: '',
@@ -178,4 +178,3 @@ export default function Dashboard() {
     </div>
   );
 }
-
