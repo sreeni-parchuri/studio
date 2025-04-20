@@ -131,7 +131,7 @@ export default function Home() {
             </CardHeader>
             <CardContent className="grid gap-4">
               <div className="grid grid-cols-2 gap-4">
-                <div>
+                <div className="space-y-2">
                   <div className="flex items-center justify-between">
                     <Label htmlFor="includeDesign">Include Design</Label>
                     <Switch
@@ -146,7 +146,7 @@ export default function Home() {
                     onChange={(e) => setDesignComments(e.target.value)}
                   />
                 </div>
-                <div>
+                <div className="space-y-2">
                   <div className="flex items-center justify-between">
                     <Label htmlFor="includeBackend">Include Backend</Label>
                     <Switch
@@ -161,7 +161,7 @@ export default function Home() {
                     onChange={(e) => setBackendComments(e.target.value)}
                   />
                 </div>
-                <div>
+                <div className="space-y-2">
                   <div className="flex items-center justify-between">
                     <Label htmlFor="includeFrontend">Include Frontend</Label>
                     <Switch
@@ -176,7 +176,7 @@ export default function Home() {
                     onChange={(e) => setFrontendComments(e.target.value)}
                   />
                 </div>
-                <div>
+                <div className="space-y-2">
                   <div className="flex items-center justify-between">
                     <Label htmlFor="includeQA">Include QA</Label>
                     <Switch
@@ -191,7 +191,7 @@ export default function Home() {
                     onChange={(e) => setQAComments(e.target.value)}
                   />
                 </div>
-                <div>
+                <div className="space-y-2">
                   <div className="flex items-center justify-between">
                     <Label htmlFor="includeDatabase">Include Database</Label>
                     <Switch
@@ -226,3 +226,4 @@ export default function Home() {
     </div>
   );
 }
+
