@@ -155,9 +155,9 @@ export default function Home() {
             securityConsiderations: data.securityConsiderations || '',
             xsMultiplier: data.xsMultiplier || 0.5,
             sMultiplier: data.sMultiplier || 1,
-            mMultiplier: data.mMultiplier || 2,
-            lMultiplier: data.lMultiplier || 3,
-            xlMultiplier: data.xlMultiplier || 5,
+            mMultiplier: 2,
+            lMultiplier: 3,
+            xlMultiplier: 5,
             techStack: data.techStack || '',
             comments: data.comments || '',
           });
