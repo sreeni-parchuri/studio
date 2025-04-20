@@ -34,7 +34,11 @@ const defaultConfiguration = {
   xlMultiplier: '',
   techStack: '',
   comments: '',
-  tshirtSize: '',
+  xsHours: '',
+  sHours: '',
+  mHours: '',
+  lHours: '',
+  xlHours: '',
 };
 
 export default function Configuration() {
@@ -44,10 +48,6 @@ export default function Configuration() {
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const {id, value} = event.target;
-    setConfiguration({...configuration, [id]: value});
-  };
-
-  const handleSelectChange = (value: string, id: string) => {
     setConfiguration({...configuration, [id]: value});
   };
 
@@ -63,7 +63,6 @@ export default function Configuration() {
             <TableRow>
               <TableHead className="w-[400px]">Setting</TableHead>
               <TableHead>Value</TableHead>
-              <TableHead>T-Shirt Size</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -80,24 +79,6 @@ export default function Configuration() {
                   placeholder="e.g., Team size, experience levels"
                 />
               </TableCell>
-              <TableCell>
-                <Select
-                  onValueChange={(value) =>
-                    handleSelectChange(value, 'tshirtSize')
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select size" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="XS">XS</SelectItem>
-                    <SelectItem value="S">S</SelectItem>
-                    <SelectItem value="M">M</SelectItem>
-                    <SelectItem value="L">L</SelectItem>
-                    <SelectItem value="XL">XL</SelectItem>
-                  </SelectContent>
-                </Select>
-              </TableCell>
             </TableRow>
             <TableRow>
               <TableCell>
@@ -112,24 +93,6 @@ export default function Configuration() {
                   placeholder="e.g., 80"
                 />
               </TableCell>
-              <TableCell>
-                <Select
-                  onValueChange={(value) =>
-                    handleSelectChange(value, 'tshirtSize')
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select size" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="XS">XS</SelectItem>
-                    <SelectItem value="S">S</SelectItem>
-                    <SelectItem value="M">M</SelectItem>
-                    <SelectItem value="L">L</SelectItem>
-                    <SelectItem value="XL">XL</SelectItem>
-                  </SelectContent>
-                </Select>
-              </TableCell>
             </TableRow>
             <TableRow>
               <TableCell>
@@ -143,24 +106,6 @@ export default function Configuration() {
                   onChange={handleChange}
                   placeholder="e.g., Tailwind CSS, SCSS"
                 />
-              </TableCell>
-              <TableCell>
-                <Select
-                  onValueChange={(value) =>
-                    handleSelectChange(value, 'tshirtSize')
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select size" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="XS">XS</SelectItem>
-                    <SelectItem value="S">S</SelectItem>
-                    <SelectItem value="M">M</SelectItem>
-                    <SelectItem value="L">L</SelectItem>
-                    <SelectItem value="XL">XL</SelectItem>
-                  </SelectContent>
-                </Select>
               </TableCell>
             </TableRow>
             <TableRow>
@@ -178,24 +123,6 @@ export default function Configuration() {
                   placeholder="e.g., WCAG compliance"
                 />
               </TableCell>
-              <TableCell>
-                <Select
-                  onValueChange={(value) =>
-                    handleSelectChange(value, 'tshirtSize')
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select size" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="XS">XS</SelectItem>
-                    <SelectItem value="S">S</SelectItem>
-                    <SelectItem value="M">M</SelectItem>
-                    <SelectItem value="L">L</SelectItem>
-                    <SelectItem value="XL">XL</SelectItem>
-                  </SelectContent>
-                </Select>
-              </TableCell>
             </TableRow>
             <TableRow>
               <TableCell>
@@ -209,24 +136,6 @@ export default function Configuration() {
                   onChange={handleChange}
                   placeholder="e.g., Load times, optimization"
                 />
-              </TableCell>
-              <TableCell>
-                <Select
-                  onValueChange={(value) =>
-                    handleSelectChange(value, 'tshirtSize')
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select size" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="XS">XS</SelectItem>
-                    <SelectItem value="S">S</SelectItem>
-                    <SelectItem value="M">M</SelectItem>
-                    <SelectItem value="L">L</SelectItem>
-                    <SelectItem value="XL">XL</SelectItem>
-                  </SelectContent>
-                </Select>
               </TableCell>
             </TableRow>
             <TableRow>
@@ -244,24 +153,6 @@ export default function Configuration() {
                   placeholder="e.g., Protection against XSS, CSRF"
                 />
               </TableCell>
-              <TableCell>
-                <Select
-                  onValueChange={(value) =>
-                    handleSelectChange(value, 'tshirtSize')
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select size" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="XS">XS</SelectItem>
-                    <SelectItem value="S">S</SelectItem>
-                    <SelectItem value="M">M</SelectItem>
-                    <SelectItem value="L">L</SelectItem>
-                    <SelectItem value="XL">XL</SelectItem>
-                  </SelectContent>
-                </Select>
-              </TableCell>
             </TableRow>
             <TableRow>
               <TableCell>
@@ -275,24 +166,6 @@ export default function Configuration() {
                   onChange={handleChange}
                   placeholder="e.g., 0.5"
                 />
-              </TableCell>
-              <TableCell>
-                <Select
-                  onValueChange={(value) =>
-                    handleSelectChange(value, 'tshirtSize')
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select size" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="XS">XS</SelectItem>
-                    <SelectItem value="S">S</SelectItem>
-                    <SelectItem value="M">M</SelectItem>
-                    <SelectItem value="L">L</SelectItem>
-                    <SelectItem value="XL">XL</SelectItem>
-                  </SelectContent>
-                </Select>
               </TableCell>
             </TableRow>
             <TableRow>
@@ -308,24 +181,6 @@ export default function Configuration() {
                   placeholder="e.g., 1"
                 />
               </TableCell>
-              <TableCell>
-                <Select
-                  onValueChange={(value) =>
-                    handleSelectChange(value, 'tshirtSize')
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select size" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="XS">XS</SelectItem>
-                    <SelectItem value="S">S</SelectItem>
-                    <SelectItem value="M">M</SelectItem>
-                    <SelectItem value="L">L</SelectItem>
-                    <SelectItem value="XL">XL</SelectItem>
-                  </SelectContent>
-                </Select>
-              </TableCell>
             </TableRow>
             <TableRow>
               <TableCell>
@@ -339,24 +194,6 @@ export default function Configuration() {
                   onChange={handleChange}
                   placeholder="e.g., 2"
                 />
-              </TableCell>
-              <TableCell>
-                <Select
-                  onValueChange={(value) =>
-                    handleSelectChange(value, 'tshirtSize')
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select size" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="XS">XS</SelectItem>
-                    <SelectItem value="S">S</SelectItem>
-                    <SelectItem value="M">M</SelectItem>
-                    <SelectItem value="L">L</SelectItem>
-                    <SelectItem value="XL">XL</SelectItem>
-                  </SelectContent>
-                </Select>
               </TableCell>
             </TableRow>
             <TableRow>
@@ -372,24 +209,6 @@ export default function Configuration() {
                   placeholder="e.g., 3"
                 />
               </TableCell>
-              <TableCell>
-                <Select
-                  onValueChange={(value) =>
-                    handleSelectChange(value, 'tshirtSize')
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select size" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="XS">XS</SelectItem>
-                    <SelectItem value="S">S</SelectItem>
-                    <SelectItem value="M">M</SelectItem>
-                    <SelectItem value="L">L</SelectItem>
-                    <SelectItem value="XL">XL</SelectItem>
-                  </SelectContent>
-                </Select>
-              </TableCell>
             </TableRow>
             <TableRow>
               <TableCell>
@@ -404,23 +223,75 @@ export default function Configuration() {
                   placeholder="e.g., 5"
                 />
               </TableCell>
+            </TableRow>
+            <TableRow>
               <TableCell>
-                <Select
-                  onValueChange={(value) =>
-                    handleSelectChange(value, 'tshirtSize')
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select size" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="XS">XS</SelectItem>
-                    <SelectItem value="S">S</SelectItem>
-                    <SelectItem value="M">M</SelectItem>
-                    <SelectItem value="L">L</SelectItem>
-                    <SelectItem value="XL">XL</SelectItem>
-                  </SelectContent>
-                </Select>
+                <Label htmlFor="xsHours">XS Hours</Label>
+              </TableCell>
+              <TableCell>
+                <Input
+                  type="number"
+                  id="xsHours"
+                  value={configuration.xsHours}
+                  onChange={handleChange}
+                  placeholder="e.g., 10"
+                />
+              </TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell>
+                <Label htmlFor="sHours">S Hours</Label>
+              </TableCell>
+              <TableCell>
+                <Input
+                  type="number"
+                  id="sHours"
+                  value={configuration.sHours}
+                  onChange={handleChange}
+                  placeholder="e.g., 20"
+                />
+              </TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell>
+                <Label htmlFor="mHours">M Hours</Label>
+              </TableCell>
+              <TableCell>
+                <Input
+                  type="number"
+                  id="mHours"
+                  value={configuration.mHours}
+                  onChange={handleChange}
+                  placeholder="e.g., 30"
+                />
+              </TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell>
+                <Label htmlFor="lHours">L Hours</Label>
+              </TableCell>
+              <TableCell>
+                <Input
+                  type="number"
+                  id="lHours"
+                  value={configuration.lHours}
+                  onChange={handleChange}
+                  placeholder="e.g., 40"
+                />
+              </TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell>
+                <Label htmlFor="xlHours">XL Hours</Label>
+              </TableCell>
+              <TableCell>
+                <Input
+                  type="number"
+                  id="xlHours"
+                  value={configuration.xlHours}
+                  onChange={handleChange}
+                  placeholder="e.g., 50"
+                />
               </TableCell>
             </TableRow>
             <TableRow>
@@ -436,24 +307,6 @@ export default function Configuration() {
                   placeholder="e.g., React, Next.js, Tailwind CSS"
                 />
               </TableCell>
-              <TableCell>
-                <Select
-                  onValueChange={(value) =>
-                    handleSelectChange(value, 'tshirtSize')
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select size" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="XS">XS</SelectItem>
-                    <SelectItem value="S">S</SelectItem>
-                    <SelectItem value="M">M</SelectItem>
-                    <SelectItem value="L">L</SelectItem>
-                    <SelectItem value="XL">XL</SelectItem>
-                  </SelectContent>
-                </Select>
-              </TableCell>
             </TableRow>
             <TableRow>
               <TableCell>
@@ -466,24 +319,6 @@ export default function Configuration() {
                   onChange={handleChange}
                   placeholder="Any additional comments or notes"
                 />
-              </TableCell>
-              <TableCell>
-                <Select
-                  onValueChange={(value) =>
-                    handleSelectChange(value, 'tshirtSize')
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select size" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="XS">XS</SelectItem>
-                    <SelectItem value="S">S</SelectItem>
-                    <SelectItem value="M">M</SelectItem>
-                    <SelectItem value="L">L</SelectItem>
-                    <SelectItem value="XL">XL</SelectItem>
-                  </SelectContent>
-                </Select>
               </TableCell>
             </TableRow>
           </TableBody>

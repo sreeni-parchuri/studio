@@ -5,12 +5,31 @@ import Configuration from '@/components/Configuration';
 import FeatureInput from '@/components/FeatureInput';
 import FeatureList from '@/components/FeatureList';
 import EffortCalculation from '@/components/EffortCalculation';
+import {Tabs, TabsContent, TabsList, TabsTrigger} from '@/components/ui/tabs';
+import {Card, CardContent, CardDescription, CardHeader, CardTitle} from '@/components/ui/card';
+import {Label} from '@/components/ui/label';
+import {Input} from '@/components/ui/input';
+import {Textarea} from '@/components/ui/textarea';
 
 export default function Home() {
   const [features, setFeatures] = useState<
     {module: string; name: string; multiplier: number; size: string; hours: number}[]
   >([]);
   const [totalEffort, setTotalEffort] = useState(0);
+  const [projectName, setProjectName] = useState('');
+  const [projectOwner, setProjectOwner] = useState('');
+  const [projectDescription, setProjectDescription] = useState('');
+  const [projectIndustry, setProjectIndustry] = useState('');
+  const [includeDesign, setIncludeDesign] = useState(false);
+  const [includeBackend, setIncludeBackend] = useState(false);
+  const [includeFrontend, setIncludeFrontend] = useState(true); // Default to true
+  const [includeQA, setIncludeQA] = useState(false);
+  const [includeDatabase, setIncludeDatabase] = useState(false);
+  const [designComments, setDesignComments] = useState('');
+  const [backendComments, setBackendComments] = useState('');
+  const [frontendComments, setFrontendComments] = useState('');
+  const [qaComments, setQAComments] = useState('');
+  const [databaseComments, setDatabaseComments] = useState('');
 
   const handleFeatureAdd = (newFeature: {
     module: string;
@@ -24,7 +43,6 @@ export default function Home() {
 
   useEffect(() => {
     const calculateTotalEffort = () => {
-      // This is placeholder logic. Replace with your actual calculation.
       const effortValues: {[key: string]: number} = {
         XS: 1,
         S: 2,
@@ -46,10 +64,156 @@ export default function Home() {
   return (
     <div className="container mx-auto p-4 space-y-4">
       <h1 className="text-2xl font-bold">Frontend Estimator Pro</h1>
-      <Configuration />
-      <FeatureInput onFeatureAdd={handleFeatureAdd} />
-      <FeatureList features={features} />
-      <EffortCalculation totalEffort={totalEffort} />
+      <Tabs defaultValue="projectDetails" className="w-[100%]">
+        <TabsList>
+          <TabsTrigger value="projectDetails">Project Details</TabsTrigger>
+          <TabsTrigger value="estimationInclusions">Estimation Inclusions</TabsTrigger>
+          <TabsTrigger value="configuration">Configuration</TabsTrigger>
+        </TabsList>
+        <TabsContent value="projectDetails" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>Project Details</CardTitle>
+              <CardDescription>Enter basic project information.</CardDescription>
+            </CardHeader>
+            <CardContent className="grid gap-4">
+              <div className="grid gap-2">
+                <Label htmlFor="projectName">Project Name</Label>
+                <Input
+                  type="text"
+                  id="projectName"
+                  placeholder="Project Name"
+                  value={projectName}
+                  onChange={(e) => setProjectName(e.target.value)}
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="projectOwner">Project Owner</Label>
+                <Input
+                  type="text"
+                  id="projectOwner"
+                  placeholder="Project Owner"
+                  value={projectOwner}
+                  onChange={(e) => setProjectOwner(e.target.value)}
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="projectDescription">Project Description</Label>
+                <Textarea
+                  id="projectDescription"
+                  placeholder="Project Description"
+                  value={projectDescription}
+                  onChange={(e) => setProjectDescription(e.target.value)}
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="projectIndustry">Project Industry</Label>
+                <Input
+                  type="text"
+                  id="projectIndustry"
+                  placeholder="Project Industry"
+                  value={projectIndustry}
+                  onChange={(e) => setProjectIndustry(e.target.value)}
+                />
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+        <TabsContent value="estimationInclusions" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>Estimation Inclusions</CardTitle>
+              <CardDescription>
+                Select which estimations to include and provide comments.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="grid gap-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="includeDesign">Include Design</Label>
+                  <input
+                    type="checkbox"
+                    id="includeDesign"
+                    checked={includeDesign}
+                    onChange={(e) => setIncludeDesign(e.target.checked)}
+                  />
+                  <Textarea
+                    placeholder="Design Comments"
+                    value={designComments}
+                    onChange={(e) => setDesignComments(e.target.value)}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="includeBackend">Include Backend</Label>
+                  <input
+                    type="checkbox"
+                    id="includeBackend"
+                    checked={includeBackend}
+                    onChange={(e) => setIncludeBackend(e.target.checked)}
+                  />
+                  <Textarea
+                    placeholder="Backend Comments"
+                    value={backendComments}
+                    onChange={(e) => setBackendComments(e.target.value)}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="includeFrontend">Include Frontend</Label>
+                  <input
+                    type="checkbox"
+                    id="includeFrontend"
+                    checked={includeFrontend}
+                    onChange={(e) => setIncludeFrontend(e.target.checked)}
+                  />
+                  <Textarea
+                    placeholder="Frontend Comments"
+                    value={frontendComments}
+                    onChange={(e) => setFrontendComments(e.target.value)}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="includeQA">Include QA</Label>
+                  <input
+                    type="checkbox"
+                    id="includeQA"
+                    checked={includeQA}
+                    onChange={(e) => setIncludeQA(e.target.checked)}
+                  />
+                  <Textarea
+                    placeholder="QA Comments"
+                    value={qaComments}
+                    onChange={(e) => setQAComments(e.target.value)}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="includeDatabase">Include Database</Label>
+                  <input
+                    type="checkbox"
+                    id="includeDatabase"
+                    checked={includeDatabase}
+                    onChange={(e) => setIncludeDatabase(e.target.checked)}
+                  />
+                  <Textarea
+                    placeholder="Database Comments"
+                    value={databaseComments}
+                    onChange={(e) => setDatabaseComments(e.target.value)}
+                  />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          {includeFrontend && (
+            <>
+              <FeatureInput onFeatureAdd={handleFeatureAdd} />
+              <FeatureList features={features} />
+            </>
+          )}
+          <EffortCalculation totalEffort={totalEffort} />
+        </TabsContent>
+        <TabsContent value="configuration" className="space-y-4">
+          <Configuration />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
