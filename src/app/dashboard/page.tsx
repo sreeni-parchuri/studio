@@ -34,6 +34,7 @@ export default function Dashboard() {
     projectIndustry: '',
   });
   const [isCreating, setIsCreating] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -42,9 +43,11 @@ export default function Dashboard() {
         id: doc.id,
         ...doc.data(),
       })) as Project[];
-      setProjects(projectsList);
-    };
 
+      setProjects(projectsList);
+      setLoading(false);
+    };
+    setLoading(true);
     fetchProjects();
   }, []);
 
@@ -55,7 +58,8 @@ export default function Dashboard() {
   const createProject = async () => {
     try {
       const docRef = await addDoc(collection(db, 'projects'), newProject);
-      setProjects([...projects, {id: docRef.id, ...newProject}]);
++     const createdProject: Project = {id: docRef.id, ...newProject};
++     setProjects((prevProjects) => [...prevProjects, createdProject]);
       setNewProject({
         projectName: '',
         projectOwner: '',
@@ -90,7 +94,7 @@ export default function Dashboard() {
         <Card>
           <CardHeader>
             <CardTitle>New Project</CardTitle>
-            <CardDescription>Enter details for the new project.</CardDescription>
+            <CardDescription>Enter project details.</CardDescription>
           </CardHeader>
           <CardContent className="grid gap-4">
             <div className="grid gap-2">
@@ -144,7 +148,9 @@ export default function Dashboard() {
         </Card>
       )}
 
-      <h2 className="text-xl font-semibold">Existing Projects</h2>
+      <h2 className="text-xl font-semibold">
+        Existing Projects
+      </h2>
       {projects.length === 0 ? (
         <p>No projects found.</p>
       ) : (
