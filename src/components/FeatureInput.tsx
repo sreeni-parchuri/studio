@@ -22,13 +22,16 @@ interface FeatureInputProps {
 export default function FeatureInput({onFeatureAdd}: FeatureInputProps) {
   const [module, setModule] = useState('');
   const [name, setName] = useState('');
-  const [multiplier, setMultiplier] = useState(1);
+  const [multiplier, setMultiplier] = useState<number | ''>(1);
   const [size, setSize] = useState('');
-  const [hours, setHours] = useState(0);
+  const [hours, setHours] = useState<number | ''>(0);
 
   const handleSubmit = () => {
-    if (module && name && multiplier && size && hours) {
-      onFeatureAdd({module, name, multiplier, size, hours});
+    if (module && name && multiplier !== '' && size && hours !== '') {
+      const multiplierValue = typeof multiplier === 'string' ? parseFloat(multiplier) : multiplier;
+      const hoursValue = typeof hours === 'string' ? parseFloat(hours) : hours;
+
+      onFeatureAdd({module, name, multiplier: multiplierValue, size, hours: hoursValue});
       setModule('');
       setName('');
       setMultiplier(1);
@@ -111,7 +114,12 @@ export default function FeatureInput({onFeatureAdd}: FeatureInputProps) {
               id="multiplier"
               placeholder="Enter multiplier"
               value={multiplier}
-              onChange={(e) => setMultiplier(parseFloat(e.target.value) || 1)}
+              onChange={(e) => {
+                const value = e.target.value;
+                if (value === '' || /^[0-9]+(\.[0-9]*)?$/.test(value)) {
+                  setMultiplier(value);
+                }
+              }}
             />
           </div>
           <div className="grid gap-2">
@@ -136,7 +144,12 @@ export default function FeatureInput({onFeatureAdd}: FeatureInputProps) {
               id="hours"
               placeholder="Enter hours"
               value={hours}
-              onChange={(e) => setHours(parseFloat(e.target.value) || 0)}
+              onChange={(e) => {
+                const value = e.target.value;
+                if (value === '' || /^[0-9]+(\.[0-9]*)?$/.test(value)) {
+                  setHours(value);
+                }
+              }}
             />
           </div>
         </div>
@@ -152,3 +165,5 @@ export default function FeatureInput({onFeatureAdd}: FeatureInputProps) {
     </Card>
   );
 }
+
+    
