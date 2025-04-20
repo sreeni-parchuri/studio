@@ -1,4 +1,3 @@
-
 'use client';
 
 import {useState, useEffect} from 'react';
@@ -8,17 +7,25 @@ import FeatureList from '@/components/FeatureList';
 import EffortCalculation from '@/components/EffortCalculation';
 
 export default function Home() {
-  const [features, setFeatures] = useState<{ description: string; size: string }[]>([]);
+  const [features, setFeatures] = useState<
+    {module: string; name: string; multiplier: number; size: string; hours: number}[]
+  >([]);
   const [totalEffort, setTotalEffort] = useState(0);
 
-  const handleFeatureAdd = (newFeature: { description: string; size: string }) => {
+  const handleFeatureAdd = (newFeature: {
+    module: string;
+    name: string;
+    multiplier: number;
+    size: string;
+    hours: number;
+  }) => {
     setFeatures([...features, newFeature]);
   };
 
   useEffect(() => {
     const calculateTotalEffort = () => {
       // This is placeholder logic. Replace with your actual calculation.
-      const effortValues: { [key: string]: number } = {
+      const effortValues: {[key: string]: number} = {
         XS: 1,
         S: 2,
         M: 4,
@@ -28,7 +35,7 @@ export default function Home() {
 
       let calculatedEffort = 0;
       features.forEach((feature) => {
-        calculatedEffort += effortValues[feature.size] || 0;
+        calculatedEffort += effortValues[feature.size] * feature.multiplier * feature.hours || 0;
       });
       setTotalEffort(calculatedEffort);
     };
@@ -46,4 +53,3 @@ export default function Home() {
     </div>
   );
 }
-
