@@ -10,6 +10,7 @@ import {Card, CardContent, CardDescription, CardHeader, CardTitle} from '@/compo
 import {Label} from '@/components/ui/label';
 import {Input} from '@/components/ui/input';
 import {Textarea} from '@/components/ui/textarea';
+import {Switch} from '@/components/ui/switch';
 
 export default function Home() {
   const [features, setFeatures] = useState<
@@ -130,13 +131,14 @@ export default function Home() {
             <CardContent className="grid gap-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="includeDesign">Include Design</Label>
-                  <input
-                    type="checkbox"
-                    id="includeDesign"
-                    checked={includeDesign}
-                    onChange={(e) => setIncludeDesign(e.target.checked)}
-                  />
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="includeDesign">Include Design</Label>
+                    <Switch
+                      id="includeDesign"
+                      checked={includeDesign}
+                      onCheckedChange={(checked) => setIncludeDesign(checked)}
+                    />
+                  </div>
                   <Textarea
                     placeholder="Design Comments"
                     value={designComments}
@@ -144,13 +146,14 @@ export default function Home() {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="includeBackend">Include Backend</Label>
-                  <input
-                    type="checkbox"
-                    id="includeBackend"
-                    checked={includeBackend}
-                    onChange={(e) => setIncludeBackend(e.target.checked)}
-                  />
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="includeBackend">Include Backend</Label>
+                    <Switch
+                      id="includeBackend"
+                      checked={includeBackend}
+                      onCheckedChange={(checked) => setIncludeBackend(checked)}
+                    />
+                  </div>
                   <Textarea
                     placeholder="Backend Comments"
                     value={backendComments}
@@ -158,13 +161,14 @@ export default function Home() {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="includeFrontend">Include Frontend</Label>
-                  <input
-                    type="checkbox"
-                    id="includeFrontend"
-                    checked={includeFrontend}
-                    onChange={(e) => setIncludeFrontend(e.target.checked)}
-                  />
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="includeFrontend">Include Frontend</Label>
+                    <Switch
+                      id="includeFrontend"
+                      checked={includeFrontend}
+                      onCheckedChange={(checked) => setIncludeFrontend(checked)}
+                    />
+                  </div>
                   <Textarea
                     placeholder="Frontend Comments"
                     value={frontendComments}
@@ -172,13 +176,14 @@ export default function Home() {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="includeQA">Include QA</Label>
-                  <input
-                    type="checkbox"
-                    id="includeQA"
-                    checked={includeQA}
-                    onChange={(e) => setIncludeQA(e.target.checked)}
-                  />
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="includeQA">Include QA</Label>
+                    <Switch
+                      id="includeQA"
+                      checked={includeQA}
+                      onCheckedChange={(checked) => setIncludeQA(checked)}
+                    />
+                  </div>
                   <Textarea
                     placeholder="QA Comments"
                     value={qaComments}
@@ -186,13 +191,14 @@ export default function Home() {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="includeDatabase">Include Database</Label>
-                  <input
-                    type="checkbox"
-                    id="includeDatabase"
-                    checked={includeDatabase}
-                    onChange={(e) => setIncludeDatabase(e.target.checked)}
-                  />
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="includeDatabase">Include Database</Label>
+                    <Switch
+                      id="includeDatabase"
+                      checked={includeDatabase}
+                      onCheckedChange={(checked) => setIncludeDatabase(checked)}
+                    />
+                  </div>
                   <Textarea
                     placeholder="Database Comments"
                     value={databaseComments}
