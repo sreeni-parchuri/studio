@@ -103,7 +103,7 @@ export default function Home() {
     userSetup: '',
     codeCoverage: '',
     cssPreprocessor: '',
-    accessibilityConsiderations: '',
+     accessibilityConsiderations: '',
     performanceTargets: '',
     securityConsiderations: '',
     xsMultiplier: 0.5,
