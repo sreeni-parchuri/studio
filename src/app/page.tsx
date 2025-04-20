@@ -69,6 +69,7 @@ export default function Home() {
         <TabsList>
           <TabsTrigger value="projectDetails">Project Details</TabsTrigger>
           <TabsTrigger value="estimationInclusions">Estimation Inclusions</TabsTrigger>
+          <TabsTrigger value="featureInput">Feature Input</TabsTrigger>
           <TabsTrigger value="configuration">Configuration</TabsTrigger>
         </TabsList>
         <TabsContent value="projectDetails" className="space-y-4">
@@ -208,6 +209,8 @@ export default function Home() {
               </div>
             </CardContent>
           </Card>
+        </TabsContent>
+        <TabsContent value="featureInput" className="space-y-4">
           {includeFrontend && (
             <>
               <FeatureInput onFeatureAdd={handleFeatureAdd} />
