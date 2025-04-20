@@ -22,33 +22,25 @@ interface FeatureInputProps {
 export default function FeatureInput({onFeatureAdd}: FeatureInputProps) {
   const [module, setModule] = useState('');
   const [name, setName] = useState('');
-  const [multiplier, setMultiplier] = useState<number | ''>(1);
+  const [multiplier, setMultiplier] = useState<number | undefined>(1);
   const [size, setSize] = useState('');
-  const [hours, setHours] = useState<number | ''>(0);
+  const [hours, setHours] = useState<number | undefined>(0);
 
   const handleSubmit = () => {
-    if (module && name && multiplier !== '' && size && hours !== '') {
-      const multiplierValue = typeof multiplier === 'string' ? parseFloat(multiplier) : multiplier;
-      const hoursValue = typeof hours === 'string' ? parseFloat(hours) : hours;
+    const multiplierValue = multiplier !== undefined ? multiplier : 1;
+    const hoursValue = hours !== undefined ? hours : 0;
 
-      onFeatureAdd({module, name, multiplier: multiplierValue, size, hours: hoursValue});
-      setModule('');
-      setName('');
-      setMultiplier(1);
-      setSize('');
-      setHours(0);
+    onFeatureAdd({module, name, multiplier: multiplierValue, size, hours: hoursValue});
+    setModule('');
+    setName('');
+    setMultiplier(1);
+    setSize('');
+    setHours(0);
 
-      toast({
-        title: 'Feature Added',
-        description: 'The feature has been successfully added to the list.',
-      });
-    } else {
-      toast({
-        title: 'Error',
-        description: 'Please fill in all fields.',
-        variant: 'destructive',
-      });
-    }
+    toast({
+      title: 'Feature Added',
+      description: 'The feature has been successfully added to the list.',
+    });
   };
 
   const handleAISuggestion = async () => {
@@ -113,11 +105,11 @@ export default function FeatureInput({onFeatureAdd}: FeatureInputProps) {
               type="number"
               id="multiplier"
               placeholder="Enter multiplier"
-              value={multiplier}
+              value={multiplier || ''}
               onChange={(e) => {
                 const value = e.target.value;
                 if (value === '' || /^[0-9]+(\.[0-9]*)?$/.test(value)) {
-                  setMultiplier(value);
+                  setMultiplier(value === '' ? undefined : parseFloat(value));
                 }
               }}
             />
@@ -143,11 +135,11 @@ export default function FeatureInput({onFeatureAdd}: FeatureInputProps) {
               type="number"
               id="hours"
               placeholder="Enter hours"
-              value={hours}
+              value={hours || ''}
               onChange={(e) => {
                 const value = e.target.value;
                 if (value === '' || /^[0-9]+(\.[0-9]*)?$/.test(value)) {
-                  setHours(value);
+                  setHours(value === '' ? undefined : parseFloat(value));
                 }
               }}
             />
@@ -165,5 +157,3 @@ export default function FeatureInput({onFeatureAdd}: FeatureInputProps) {
     </Card>
   );
 }
-
-    
