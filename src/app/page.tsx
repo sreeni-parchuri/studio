@@ -1,6 +1,8 @@
 'use client';
 
 import {useState, useEffect} from 'react';
+import {useSearchParams} from 'next/navigation';
+import {useRouter} from 'next/navigation';
 import Configuration from '@/components/Configuration';
 import FeatureInput from '@/components/FeatureInput';
 import FeatureList from '@/components/FeatureList';
@@ -13,28 +15,88 @@ import {Textarea} from '@/components/ui/textarea';
 import {Switch} from '@/components/ui/switch';
 import {suggestTShirtSize} from '@/ai/flows/suggest-t-shirt-size';
 import {Button} from '@/components/ui/button';
+import {db} from '@/lib/firebase';
+import {
+  doc,
+  getDoc,
+  updateDoc,
+} from 'firebase/firestore';
+
+interface Feature {
+  module: string;
+  name: string;
+  multiplier: number;
+  size: string;
+  hours: number;
+}
+
+interface ConfigurationType {
+  XS: number;
+  S: number;
+  M: number;
+  L: number;
+  XL: number;
+  userSetup: string;
+  codeCoverage: string;
+  cssPreprocessor: string;
+  accessibilityConsiderations: string;
+  performanceTargets: string;
+  securityConsiderations: string;
+  xsMultiplier: number;
+  sMultiplier: number;
+  mMultiplier: number;
+  lMultiplier: number;
+  xlMultiplier: number;
+  techStack: string;
+  comments: string;
+}
+
+interface ProjectDetails {
+  projectName: string;
+  projectOwner: string;
+  projectDescription: string;
+  projectIndustry: string;
+}
+
+interface EstimationInclusions {
+  includeDesign: boolean;
+  includeBackend: boolean;
+  includeFrontend: boolean;
+  includeQA: boolean;
+  includeDatabase: boolean;
+  designComments: string;
+  backendComments: string;
+  frontendComments: string;
+  qaComments: string;
+  databaseComments: string;
+}
 
 export default function Home() {
-  const [features, setFeatures] = useState<
-    {module: string; name: string; multiplier: number; size: string; hours: number}[]
-  >([]);
+  const searchParams = useSearchParams();
+  const projectId = searchParams.get('projectId');
+  const router = useRouter();
+  const [features, setFeatures] = useState<Feature[]>([]);
   const [totalEffort, setTotalEffort] = useState(0);
-  const [projectName, setProjectName] = useState('');
-  const [projectOwner, setProjectOwner] = useState('');
-  const [projectDescription, setProjectDescription] = useState('');
-  const [projectIndustry, setProjectIndustry] = useState('');
-  const [includeDesign, setIncludeDesign] = useState(false);
-  const [includeBackend, setIncludeBackend] = useState(false);
-  const [includeFrontend, setIncludeFrontend] = useState(true); // Default to true
-  const [includeQA, setIncludeQA] = useState(false);
-  const [includeDatabase, setIncludeDatabase] = useState(false);
-  const [designComments, setDesignComments] = useState('');
-  const [backendComments, setBackendComments] = useState('');
-  const [frontendComments, setFrontendComments] = useState('');
-  const [qaComments, setQAComments] = useState('');
-  const [databaseComments, setDatabaseComments] = useState('');
+  const [projectDetails, setProjectDetails] = useState<ProjectDetails>({
+    projectName: '',
+    projectOwner: '',
+    projectDescription: '',
+    projectIndustry: '',
+  });
+  const [estimationInclusions, setEstimationInclusions] = useState<EstimationInclusions>({
+    includeDesign: false,
+    includeBackend: false,
+    includeFrontend: true,
+    includeQA: false,
+    includeDatabase: false,
+    designComments: '',
+    backendComments: '',
+    frontendComments: '',
+    qaComments: '',
+    databaseComments: '',
+  });
 
-  const [configuration, setConfiguration] = useState({
+  const [configuration, setConfiguration] = useState<ConfigurationType>({
     XS: 10,
     S: 20,
     M: 30,
@@ -55,15 +117,61 @@ export default function Home() {
     comments: '',
   });
 
-  const handleFeatureAdd = (newFeature: {
-    module: string;
-    name: string;
-    multiplier: number;
-    size: string;
-    hours: number;
-  }) => {
-    setFeatures([...features, newFeature]);
-  };
+  useEffect(() => {
+    if (projectId) {
+      const fetchProjectData = async () => {
+        const docRef = doc(db, 'projects', projectId);
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          setProjectDetails({
+            projectName: data.projectName || '',
+            projectOwner: data.projectOwner || '',
+            projectDescription: data.projectDescription || '',
+            projectIndustry: data.projectIndustry || '',
+          });
+          setEstimationInclusions({
+            includeDesign: data.includeDesign || false,
+            includeBackend: data.includeBackend || false,
+            includeFrontend: data.includeFrontend || true,
+            includeQA: data.includeQA || false,
+            includeDatabase: data.includeDatabase || false,
+            designComments: data.designComments || '',
+            backendComments: data.backendComments || '',
+            frontendComments: data.frontendComments || '',
+            qaComments: data.qaComments || '',
+            databaseComments: data.databaseComments || '',
+          });
+          setConfiguration({
+            XS: data.XS || 10,
+            S: data.S || 20,
+            M: data.M || 30,
+            L: data.L || 40,
+            XL: data.XL || 50,
+            userSetup: data.userSetup || '',
+            codeCoverage: data.codeCoverage || '',
+            cssPreprocessor: data.cssPreprocessor || '',
+            accessibilityConsiderations: data.accessibilityConsiderations || '',
+            performanceTargets: data.performanceTargets || '',
+            securityConsiderations: data.securityConsiderations || '',
+            xsMultiplier: data.xsMultiplier || 0.5,
+            sMultiplier: data.sMultiplier || 1,
+            mMultiplier: data.mMultiplier || 2,
+            lMultiplier: data.lMultiplier || 3,
+            xlMultiplier: data.xlMultiplier || 5,
+            techStack: data.techStack || '',
+            comments: data.comments || '',
+          });
+          setFeatures(data.features || []);
+        } else {
+          console.log('No such document!');
+        }
+      };
+
+      fetchProjectData();
+    }
+  }, [projectId]);
 
   useEffect(() => {
     const calculateTotalEffort = () => {
@@ -85,6 +193,10 @@ export default function Home() {
 
     calculateTotalEffort();
   }, [features, configuration]);
+
+  const handleFeatureAdd = (newFeature: Feature) => {
+    setFeatures([...features, newFeature]);
+  };
 
   const handleAISuggestion = async (featureName: string) => {
     if (featureName) {
@@ -119,6 +231,49 @@ export default function Home() {
     }
   };
 
+  const handleProjectDetailsChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setProjectDetails({...projectDetails, [e.target.name]: e.target.value});
+  };
+
+  const handleEstimationInclusionsChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    if (e.target.type === 'checkbox') {
+      setEstimationInclusions({
+        ...estimationInclusions,
+        [e.target.name]: (e.target as HTMLInputElement).checked,
+      });
+    } else {
+      setEstimationInclusions({...estimationInclusions, [e.target.name]: e.target.value});
+    }
+  };
+
+  const handleConfigurationChange = (
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const {id, value} = event.target;
+    setConfiguration({...configuration, [id]: value as any});
+  };
+
+  const saveProjectData = async () => {
+    if (projectId) {
+      try {
+        const docRef = doc(db, 'projects', projectId);
+        await updateDoc(docRef, {
+          ...projectDetails,
+          ...estimationInclusions,
+          ...configuration,
+          features: features,
+        });
+        alert('Project data saved successfully!');
+      } catch (error) {
+        console.error('Error saving project data:', error);
+        alert('Failed to save project data. Please try again.');
+      }
+    } else {
+      alert('No project ID found. Please create or select a project first.');
+      router.push('/dashboard');
+    }
+  };
+
   return (
     <div className="container mx-auto p-4 space-y-4">
       <h1 className="text-2xl font-bold">Frontend Estimator Pro</h1>
@@ -141,9 +296,10 @@ export default function Home() {
                 <Input
                   type="text"
                   id="projectName"
+                  name="projectName"
                   placeholder="Project Name"
-                  value={projectName}
-                  onChange={(e) => setProjectName(e.target.value)}
+                  value={projectDetails.projectName}
+                  onChange={handleProjectDetailsChange}
                 />
               </div>
               <div className="grid gap-2">
@@ -151,18 +307,20 @@ export default function Home() {
                 <Input
                   type="text"
                   id="projectOwner"
+                  name="projectOwner"
                   placeholder="Project Owner"
-                  value={projectOwner}
-                  onChange={(e) => setProjectOwner(e.target.value)}
+                  value={projectDetails.projectOwner}
+                  onChange={handleProjectDetailsChange}
                 />
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="projectDescription">Project Description</Label>
                 <Textarea
                   id="projectDescription"
+                  name="projectDescription"
                   placeholder="Project Description"
-                  value={projectDescription}
-                  onChange={(e) => setProjectDescription(e.target.value)}
+                  value={projectDetails.projectDescription}
+                  onChange={handleProjectDetailsChange}
                 />
               </div>
               <div className="grid gap-2">
@@ -170,9 +328,10 @@ export default function Home() {
                 <Input
                   type="text"
                   id="projectIndustry"
+                  name="projectIndustry"
                   placeholder="Project Industry"
-                  value={projectIndustry}
-                  onChange={(e) => setProjectIndustry(e.target.value)}
+                  value={projectDetails.projectIndustry}
+                  onChange={handleProjectDetailsChange}
                 />
               </div>
             </CardContent>
@@ -193,14 +352,20 @@ export default function Home() {
                     <Label htmlFor="includeDesign">Include Design</Label>
                     <Switch
                       id="includeDesign"
-                      checked={includeDesign}
-                      onCheckedChange={(checked) => setIncludeDesign(checked)}
+                      name="includeDesign"
+                      checked={estimationInclusions.includeDesign}
+                      onCheckedChange={(checked) =>
+                        handleEstimationInclusionsChange({
+                          target: {name: 'includeDesign', type: 'checkbox', checked},
+                        } as any)
+                      }
                     />
                   </div>
                   <Textarea
                     placeholder="Design Comments"
-                    value={designComments}
-                    onChange={(e) => setDesignComments(e.target.value)}
+                    name="designComments"
+                    value={estimationInclusions.designComments}
+                    onChange={handleEstimationInclusionsChange}
                   />
                 </div>
                 <div className="space-y-2">
@@ -208,14 +373,20 @@ export default function Home() {
                     <Label htmlFor="includeBackend">Include Backend</Label>
                     <Switch
                       id="includeBackend"
-                      checked={includeBackend}
-                      onCheckedChange={(checked) => setIncludeBackend(checked)}
+                      name="includeBackend"
+                      checked={estimationInclusions.includeBackend}
+                      onCheckedChange={(checked) =>
+                        handleEstimationInclusionsChange({
+                          target: {name: 'includeBackend', type: 'checkbox', checked},
+                        } as any)
+                      }
                     />
                   </div>
                   <Textarea
                     placeholder="Backend Comments"
-                    value={backendComments}
-                    onChange={(e) => setBackendComments(e.target.value)}
+                    name="backendComments"
+                    value={estimationInclusions.backendComments}
+                    onChange={handleEstimationInclusionsChange}
                   />
                 </div>
                 <div className="space-y-2">
@@ -223,14 +394,20 @@ export default function Home() {
                     <Label htmlFor="includeFrontend">Include Frontend</Label>
                     <Switch
                       id="includeFrontend"
-                      checked={includeFrontend}
-                      onCheckedChange={(checked) => setIncludeFrontend(checked)}
+                      name="includeFrontend"
+                      checked={estimationInclusions.includeFrontend}
+                      onCheckedChange={(checked) =>
+                        handleEstimationInclusionsChange({
+                          target: {name: 'includeFrontend', type: 'checkbox', checked},
+                        } as any)
+                      }
                     />
                   </div>
                   <Textarea
                     placeholder="Frontend Comments"
-                    value={frontendComments}
-                    onChange={(e) => setFrontendComments(e.target.value)}
+                    name="frontendComments"
+                    value={estimationInclusions.frontendComments}
+                    onChange={handleEstimationInclusionsChange}
                   />
                 </div>
                 <div className="space-y-2">
@@ -238,14 +415,20 @@ export default function Home() {
                     <Label htmlFor="includeQA">Include QA</Label>
                     <Switch
                       id="includeQA"
-                      checked={includeQA}
-                      onCheckedChange={(checked) => setIncludeQA(checked)}
+                      name="includeQA"
+                      checked={estimationInclusions.includeQA}
+                      onCheckedChange={(checked) =>
+                        handleEstimationInclusionsChange({
+                          target: {name: 'includeQA', type: 'checkbox', checked},
+                        } as any)
+                      }
                     />
                   </div>
                   <Textarea
                     placeholder="QA Comments"
-                    value={qaComments}
-                    onChange={(e) => setQAComments(e.target.value)}
+                    name="qaComments"
+                    value={estimationInclusions.qaComments}
+                    onChange={handleEstimationInclusionsChange}
                   />
                 </div>
                 <div className="space-y-2">
@@ -253,14 +436,20 @@ export default function Home() {
                     <Label htmlFor="includeDatabase">Include Database</Label>
                     <Switch
                       id="includeDatabase"
-                      checked={includeDatabase}
-                      onCheckedChange={(checked) => setIncludeDatabase(checked)}
+                      name="includeDatabase"
+                      checked={estimationInclusions.includeDatabase}
+                      onCheckedChange={(checked) =>
+                        handleEstimationInclusionsChange({
+                          target: {name: 'includeDatabase', type: 'checkbox', checked},
+                        } as any)
+                      }
                     />
                   </div>
                   <Textarea
                     placeholder="Database Comments"
-                    value={databaseComments}
-                    onChange={(e) => setDatabaseComments(e.target.value)}
+                    name="databaseComments"
+                    value={estimationInclusions.databaseComments}
+                    onChange={handleEstimationInclusionsChange}
                   />
                 </div>
               </div>
@@ -268,7 +457,7 @@ export default function Home() {
           </Card>
         </TabsContent>
         <TabsContent value="featureInput" className="space-y-4">
-          {includeFrontend && (
+          {estimationInclusions.includeFrontend && (
             <>
               <FeatureInput onFeatureAdd={handleFeatureAdd} onAISuggestion={handleAISuggestion} />
               <FeatureList features={features} />
@@ -283,6 +472,8 @@ export default function Home() {
           />
         </TabsContent>
       </Tabs>
+      <Button onClick={saveProjectData}>Save Project</Button>
+      <Button onClick={() => router.push('/dashboard')}>Back to Dashboard</Button>
     </div>
   );
 }
