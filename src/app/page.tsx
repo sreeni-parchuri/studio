@@ -67,8 +67,6 @@ interface EstimationInclusions {
   designComments: string;
   backendComments: string;
   frontendComments: string;
-  qaComments: string;
-  databaseComments: string;
 }
 
 export default function Home() {
@@ -271,7 +269,7 @@ export default function Home() {
     } else {
       alert('No project ID found. Please create or select a project first.');
       router.push('/dashboard');
-    }
+     }
   };
 
   return (
@@ -472,8 +470,12 @@ export default function Home() {
           />
         </TabsContent>
       </Tabs>
-      <Button onClick={saveProjectData}>Save Project</Button>
-      <Button onClick={() => router.push('/dashboard')}>Back to Dashboard</Button>
+      <div className="flex gap-2">
+        <Button onClick={saveProjectData}>Save Project</Button>
+        <Button variant="secondary" onClick={() => router.push('/dashboard')}>
+          Back to Dashboard
+        </Button>
+      </div>
     </div>
-  );
+   );
 }
