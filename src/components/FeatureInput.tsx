@@ -83,7 +83,7 @@ export default function FeatureInput({onFeatureAdd}: FeatureInputProps) {
         </CardDescription>
       </CardHeader>
       <CardContent className="grid gap-4">
-        <div className="grid grid-cols-4 gap-4">
+        <div className="grid grid-cols-5 gap-4">
           <div className="grid gap-2">
             <Label htmlFor="module">Module</Label>
             <Input
