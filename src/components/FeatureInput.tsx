@@ -1,6 +1,6 @@
 'use client';
 
-import {useState} from 'react';
+import {useState, useEffect} from 'react';
 import {toast} from '@/hooks/use-toast';
 import {Button} from '@/components/ui/button';
 import {Input} from '@/components/ui/input';
@@ -21,14 +21,29 @@ interface FeatureInputProps {
     totalHours: number;
     reasoning: string;
   }>;
+  configuration: any;
 }
 
-export default function FeatureInput({onFeatureAdd, onAISuggestion}: FeatureInputProps) {
+export default function FeatureInput({onFeatureAdd, onAISuggestion, configuration}: FeatureInputProps) {
   const [module, setModule] = useState('');
   const [name, setName] = useState('');
   const [multiplier, setMultiplier] = useState<number | undefined>(1);
   const [size, setSize] = useState('');
   const [hours, setHours] = useState<number | undefined>(0);
+
+  useEffect(() => {
+    const calculateHours = () => {
+      if (size && multiplier !== undefined) {
+        const sizeHours = configuration[size] || 0;
+        const sizeMultiplier = configuration[`${size.toLowerCase()}Multiplier`] || 1;
+        setHours(sizeHours * multiplier * sizeMultiplier);
+      } else {
+        setHours(0);
+      }
+    };
+
+    calculateHours();
+  }, [size, multiplier, configuration]);
 
   const handleSubmit = () => {
     const multiplierValue = multiplier !== undefined ? multiplier : 1;
@@ -73,14 +88,15 @@ export default function FeatureInput({onFeatureAdd, onAISuggestion}: FeatureInpu
           variant: 'destructive',
         });
       }
-    } else {
-      toast({
-        title: 'Error',
-        description: 'Please enter a feature description to get an AI suggestion.',
-        variant: 'destructive',
-      });
-    }
-  };
+     } else {
+       toast({
+         title: 'Error',
+         description: 'Please enter a feature description to get an AI suggestion.',
+         variant: 'destructive',
+       });
+     }
+   };
+ 
 
   return (
     <Card>
@@ -149,12 +165,7 @@ export default function FeatureInput({onFeatureAdd, onAISuggestion}: FeatureInpu
               id="hours"
               placeholder="Enter hours"
               value={hours || ''}
-              onChange={(e) => {
-                const value = e.target.value;
-                if (value === '' || /^[0-9]+(\.[0-9]*)?$/.test(value)) {
-                  setHours(value === '' ? undefined : parseFloat(value));
-                }
-              }}
+              readOnly
             />
           </div>
         </div>
@@ -170,3 +181,4 @@ export default function FeatureInput({onFeatureAdd, onAISuggestion}: FeatureInpu
     </Card>
   );
 }
+
