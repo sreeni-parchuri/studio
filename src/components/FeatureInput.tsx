@@ -109,7 +109,7 @@ export default function FeatureInput({onFeatureAdd, onAISuggestion, configuratio
       </CardHeader>
       <CardContent>
         <div className="overflow-x-auto">
-        <div className="grid gap-4" style={{gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))'}}>
+        <div className="flex gap-4" >
           <div className="grid gap-2">
             <Label htmlFor="module">Module</Label>
             <Input
@@ -370,3 +370,4 @@ export default function FeatureInput({onFeatureAdd, onAISuggestion, configuratio
     </Card>
   );
 }
+
