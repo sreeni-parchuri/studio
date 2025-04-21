@@ -104,8 +104,8 @@ export default function HomePage() {
         <TabsList>
           <TabsTrigger value="projectDetails">Project Details</TabsTrigger>
           <TabsTrigger value="estimationInclusions">Estimation Inclusions</TabsTrigger>
+          <TabsTrigger value="featureList">Feature List</TabsTrigger>
           <TabsTrigger value="configuration">Configuration</TabsTrigger>
-          <TabsTrigger value="featureInput">Feature Input</TabsTrigger>
          </TabsList>
          <TabsContent value="projectDetails" className="space-y-4">
            <Card>
@@ -164,8 +164,8 @@ export default function HomePage() {
              </CardHeader>
              <CardContent className="grid gap-4">
                <div className="grid gap-2">
-                 <Label htmlFor="includeDesign" className="flex items-center space-x-2">
-                   <Checkbox
+                <Label htmlFor="includeDesign" className="flex items-center space-x-2">
+                   <Switch
                      id="includeDesign"
                      name="includeDesign"
                      checked={estimationInclusions.includeDesign}
@@ -182,7 +182,7 @@ export default function HomePage() {
                </div>
                <div className="grid gap-2">
                  <Label htmlFor="includeFrontend" className="flex items-center space-x-2">
-                   <Checkbox
+                   <Switch
                      id="includeFrontend"
                      name="includeFrontend"
                      checked={estimationInclusions.includeFrontend}
@@ -199,7 +199,7 @@ export default function HomePage() {
                </div>
                <div className="grid gap-2">
                  <Label htmlFor="includeBackend" className="flex items-center space-x-2">
-                   <Checkbox
+                   <Switch
                      id="includeBackend"
                      name="includeBackend"
                      checked={estimationInclusions.includeBackend}
@@ -216,7 +216,7 @@ export default function HomePage() {
                </div>
                <div className="grid gap-2">
                  <Label htmlFor="includeQA" className="flex items-center space-x-2">
-                   <Checkbox
+                   <Switch
                      id="includeQA"
                      name="includeQA"
                      checked={estimationInclusions.includeQA}
@@ -233,7 +233,7 @@ export default function HomePage() {
                </div>
                <div className="grid gap-2">
                  <Label htmlFor="includeDatabase" className="flex items-center space-x-2">
-                   <Checkbox
+                   <Switch
                      id="includeDatabase"
                      name="includeDatabase"
                      checked={estimationInclusions.includeDatabase}
@@ -251,10 +251,7 @@ export default function HomePage() {
              </CardContent>
            </Card>
          </TabsContent>
-         <TabsContent value="configuration" className="space-y-4">
-           <Configuration configuration={configuration} setConfiguration={setConfiguration} />
-         </TabsContent>
-         <TabsContent value="featureInput" className="space-y-4">
+         <TabsContent value="featureList" className="space-y-4">
            {estimationInclusions.includeFrontend && (
             <> 
               <FeatureInput
@@ -265,6 +262,9 @@ export default function HomePage() {
               <FeatureList features={features} />
             </>
            )}
+         </TabsContent>
+         <TabsContent value="configuration" className="space-y-4">
+           <Configuration configuration={configuration} setConfiguration={setConfiguration} />
          </TabsContent>
        </Tabs>
 
