@@ -100,7 +100,7 @@ export default function HomePage() {
     <div className="container mx-auto p-4 space-y-4">
       <h1 className="text-2xl font-bold">Frontend Estimator Pro</h1>
 
-      <Tabs defaultValue="projectDetails" className="w-[400px]">
+      <Tabs defaultValue="projectDetails">
         <TabsList>
           <TabsTrigger value="projectDetails">Project Details</TabsTrigger>
           <TabsTrigger value="estimationInclusions">Estimation Inclusions</TabsTrigger>
