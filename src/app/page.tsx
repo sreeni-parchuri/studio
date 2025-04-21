@@ -252,16 +252,15 @@ export default function HomePage() {
            </Card>
          </TabsContent>
          <TabsContent value="featureList" className="space-y-4">
-           {estimationInclusions.includeFrontend && (
-            <> 
+           
               <FeatureInput
                 onFeatureAdd={handleFeatureAdd}
                 onAISuggestion={handleAISuggestion}
                 configuration={configuration}
+                estimationInclusions={estimationInclusions}
               />
               <FeatureList features={features} />
-            </>
-           )}
+            
          </TabsContent>
          <TabsContent value="configuration" className="space-y-4">
            <Configuration configuration={configuration} setConfiguration={setConfiguration} />
@@ -272,3 +271,4 @@ export default function HomePage() {
      </div>
    );
  }
+
