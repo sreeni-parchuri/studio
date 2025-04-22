@@ -1,8 +1,7 @@
 'use client';
 
-import {useState, useEffect} from 'react';
-import {useSearchParams} from 'next/navigation';
-import {useRouter} from 'next/navigation';
+import {useState, useEffect, useCallback} from 'react';
+import {useSearchParams, useRouter} from 'next/navigation';
 import Configuration from '@/components/Configuration';
 import FeatureInput from '@/components/FeatureInput';
 import FeatureList from '@/components/FeatureList';
@@ -13,10 +12,11 @@ import {Label} from '@/components/ui/label';
 import {Input} from '@/components/ui/input';
 import {Textarea} from '@/components/ui/textarea';
 import {Button} from '@/components/ui/button';
-import {Checkbox} from '@/components/ui/checkbox';
 import {Switch} from '@/components/ui/switch';
+import {v4 as uuidv4} from 'uuid';
 
 interface Feature {
+  id: string;
   module: string;
   name: string;
   multiplier: number;
@@ -78,8 +78,9 @@ export default function HomePage() {
     setEstimationInclusions({...estimationInclusions, [e.target.name]: e.target.checked});
   };
 
-  const handleFeatureAdd = (feature: Feature) => {
-    setFeatures([...features, feature]);
+  const handleFeatureAdd = (feature: Omit<Feature, 'id'>) => {
+    const newFeature: Feature = { ...feature, id: uuidv4() };
+    setFeatures([...features, newFeature]);
   };
 
   const handleAISuggestion = async (featureName: string) => {
@@ -95,6 +96,16 @@ export default function HomePage() {
       }, 500);
     });
   };
+
+  const handleFeatureUpdate = useCallback((featureId: string, updatedFeature: Feature) => {
+    setFeatures(features.map(feature =>
+      feature.id === featureId ? updatedFeature : feature
+    ));
+  }, [features, setFeatures]);
+
+  const handleFeatureDelete = useCallback((featureId: string) => {
+    setFeatures(features.filter(feature => feature.id !== featureId));
+  }, [features, setFeatures]);
 
   return (
     <div className="container mx-auto p-4 space-y-4">
@@ -259,7 +270,11 @@ export default function HomePage() {
                 configuration={configuration}
                 estimationInclusions={estimationInclusions}
               />
-              <FeatureList features={features} />
+              <FeatureList
+                features={features}
+                onFeatureUpdate={handleFeatureUpdate}
+                onFeatureDelete={handleFeatureDelete}
+              />
             
          </TabsContent>
          <TabsContent value="configuration" className="space-y-4">
