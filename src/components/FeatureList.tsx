@@ -142,7 +142,7 @@ export default function FeatureList({features, onFeatureUpdate, onFeatureDelete}
                         feature.name
                       )}
                     </TableCell>
-                    <TableCell>
+                     <TableCell>
                       {editingFeatureId === feature.id ? (
                         <Input
                           type="number"
