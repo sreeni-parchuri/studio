@@ -1,6 +1,7 @@
+
 'use client';
 
-import {useState, useEffect, useCallback} from 'react';
+import {useState, useEffect, useCallback, Suspense} from 'react';
 import {useSearchParams, useRouter} from 'next/navigation';
 import Configuration from '@/components/Configuration';
 import FeatureInput from '@/components/FeatureInput';
@@ -24,7 +25,7 @@ interface Feature {
   hours: number;
 }
 
-export default function HomePage() {
+function ProjectPageContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -46,11 +47,6 @@ export default function HomePage() {
     accessibilityConsiderations: 'WCAG compliance',
     performanceTargets: 'Load times, optimization',
     securityConsiderations: 'Protection against XSS, CSRF',
-    xsMultiplier: 0.5,
-    sMultiplier: 1,
-    mMultiplier: 2,
-    lMultiplier: 3,
-    xlMultiplier: 5,
     techStack: 'React, Next.js, Tailwind CSS',
     comments: 'Any additional comments or notes',
   });
@@ -74,8 +70,8 @@ export default function HomePage() {
     setTotalEffort(newTotalEffort);
   }, [features]);
 
-  const handleEstimationInclusionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setEstimationInclusions({...estimationInclusions, [e.target.name]: e.target.checked});
+  const handleEstimationInclusionChange = (name: string, checked: boolean) => {
+    setEstimationInclusions({...estimationInclusions, [name]: checked});
   };
 
   const handleFeatureAdd = (feature: Omit<Feature, 'id'>) => {
@@ -98,20 +94,23 @@ export default function HomePage() {
   };
 
   const handleFeatureUpdate = useCallback((featureId: string, updatedFeature: Feature) => {
-    setFeatures(features.map(feature =>
-      feature.id === featureId ? updatedFeature : feature
-    ));
-  }, [features, setFeatures]);
+    setFeatures(currentFeatures =>
+      currentFeatures.map(feature =>
+        feature.id === featureId ? updatedFeature : feature
+      )
+    );
+  }, [setFeatures]);
 
   const handleFeatureDelete = useCallback((featureId: string) => {
-    setFeatures(features.filter(feature => feature.id !== featureId));
-  }, [features, setFeatures]);
+    setFeatures(currentFeatures => currentFeatures.filter(feature => feature.id !== featureId));
+  }, [setFeatures]);
+
 
   return (
     <div className="container mx-auto p-4 space-y-4">
       <h1 className="text-2xl font-bold">Frontend Estimator Pro</h1>
 
-      <Tabs defaultValue="projectDetails">
+      <Tabs defaultValue="projectDetails" className="w-full">
         <TabsList>
           <TabsTrigger value="projectDetails">Project Details</TabsTrigger>
           <TabsTrigger value="estimationInclusions">Estimation Inclusions</TabsTrigger>
@@ -180,7 +179,7 @@ export default function HomePage() {
                      id="includeDesign"
                      name="includeDesign"
                      checked={estimationInclusions.includeDesign}
-                     onCheckedChange={e => handleEstimationInclusionChange({target: {name: 'includeDesign', checked: e}} as any)}
+                     onCheckedChange={checked => handleEstimationInclusionChange('includeDesign', checked)}
                    />
                    <span>Include Design</span>
                  </Label>
@@ -189,6 +188,7 @@ export default function HomePage() {
                    placeholder="Design Comments"
                    value={designComments}
                    onChange={(e) => setDesignComments(e.target.value)}
+                   className="mt-2"
                  />
                </div>
                <div className="grid gap-2">
@@ -197,7 +197,7 @@ export default function HomePage() {
                      id="includeFrontend"
                      name="includeFrontend"
                      checked={estimationInclusions.includeFrontend}
-                     onCheckedChange={e => handleEstimationInclusionChange({target: {name: 'includeFrontend', checked: e}} as any)}
+                     onCheckedChange={checked => handleEstimationInclusionChange('includeFrontend', checked)}
                    />
                    <span>Include Frontend</span>
                  </Label>
@@ -206,6 +206,7 @@ export default function HomePage() {
                    placeholder="Frontend Comments"
                    value={frontendComments}
                    onChange={(e) => setFrontendComments(e.target.value)}
+                    className="mt-2"
                  />
                </div>
                <div className="grid gap-2">
@@ -214,7 +215,7 @@ export default function HomePage() {
                      id="includeBackend"
                      name="includeBackend"
                      checked={estimationInclusions.includeBackend}
-                     onCheckedChange={e => handleEstimationInclusionChange({target: {name: 'includeBackend', checked: e}} as any)}
+                     onCheckedChange={checked => handleEstimationInclusionChange('includeBackend', checked)}
                    />
                    <span>Include Backend</span>
                  </Label>
@@ -223,6 +224,7 @@ export default function HomePage() {
                    placeholder="Backend Comments"
                    value={backendComments}
                    onChange={(e) => setBackendComments(e.target.value)}
+                    className="mt-2"
                  />
                </div>
                <div className="grid gap-2">
@@ -231,7 +233,7 @@ export default function HomePage() {
                      id="includeQA"
                      name="includeQA"
                      checked={estimationInclusions.includeQA}
-                     onCheckedChange={e => handleEstimationInclusionChange({target: {name: 'includeQA', checked: e}} as any)}
+                     onCheckedChange={checked => handleEstimationInclusionChange('includeQA', checked)}
                    />
                    <span>Include QA</span>
                  </Label>
@@ -240,6 +242,7 @@ export default function HomePage() {
                    placeholder="QA Comments"
                    value={qaComments}
                    onChange={(e) => setQAComments(e.target.value)}
+                    className="mt-2"
                  />
                </div>
                <div className="grid gap-2">
@@ -248,7 +251,7 @@ export default function HomePage() {
                      id="includeDatabase"
                      name="includeDatabase"
                      checked={estimationInclusions.includeDatabase}
-                     onCheckedChange={e => handleEstimationInclusionChange({target: {name: 'includeDatabase', checked: e}} as any)}
+                     onCheckedChange={checked => handleEstimationInclusionChange('includeDatabase', checked)}
                    />
                    <span>Include Database</span>
                  </Label>
@@ -257,13 +260,13 @@ export default function HomePage() {
                    placeholder="Database Comments"
                    value={databaseComments}
                    onChange={(e) => setDatabaseComments(e.target.value)}
+                    className="mt-2"
                  />
                </div>
              </CardContent>
            </Card>
          </TabsContent>
          <TabsContent value="featureList" className="space-y-4">
-           
               <FeatureInput
                 onFeatureAdd={handleFeatureAdd}
                 onAISuggestion={handleAISuggestion}
@@ -274,8 +277,8 @@ export default function HomePage() {
                 features={features}
                 onFeatureUpdate={handleFeatureUpdate}
                 onFeatureDelete={handleFeatureDelete}
+                configuration={configuration}
               />
-            
          </TabsContent>
          <TabsContent value="configuration" className="space-y-4">
            <Configuration configuration={configuration} setConfiguration={setConfiguration} />
@@ -287,3 +290,10 @@ export default function HomePage() {
    );
  }
 
+export default function HomePage() {
+  return (
+    <Suspense fallback={<div className="flex justify-center items-center h-screen"><p>Loading project details...</p></div>}>
+      <ProjectPageContent />
+    </Suspense>
+  );
+}

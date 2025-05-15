@@ -1,6 +1,7 @@
+
 'use client';
 
-import {useState} from 'react';
+import {useState, useEffect} from 'react';
 import {
   Card,
   CardContent,
@@ -34,9 +35,10 @@ interface FeatureListProps {
   features: Feature[];
   onFeatureUpdate: (featureId: string, updatedFeature: Feature) => void;
   onFeatureDelete: (featureId: string) => void;
+  configuration: any; // Add configuration to props
 }
 
-export default function FeatureList({features, onFeatureUpdate, onFeatureDelete}: FeatureListProps) {
+export default function FeatureList({features, onFeatureUpdate, onFeatureDelete, configuration}: FeatureListProps) {
   const [editingFeatureId, setEditingFeatureId] = useState<string | null>(null);
   const [editedModule, setEditedModule] = useState('');
   const [editedName, setEditedName] = useState('');
@@ -44,15 +46,29 @@ export default function FeatureList({features, onFeatureUpdate, onFeatureDelete}
   const [editedSize, setEditedSize] = useState('');
   const [editedHours, setEditedHours] = useState<number | undefined>(0);
 
+  // Calculate hours when size or multiplier changes during edit
+  useEffect(() => {
+    if (editingFeatureId) {
+      const sizeHours = configuration[editedSize] || 0;
+      const sizeMultiplier = editedMultiplier || 1; // Use editedMultiplier
+      // The individual size multipliers (xsMultiplier, sMultiplier etc) are not in configuration anymore based on previous request.
+      // If they were, the logic would be:
+      // const specificSizeMultiplier = configuration[`${editedSize.toLowerCase()}Multiplier`] || 1;
+      // setEditedHours(sizeHours * sizeMultiplier * specificSizeMultiplier);
+      setEditedHours(sizeHours * sizeMultiplier);
+    }
+  }, [editedSize, editedMultiplier, configuration, editingFeatureId]);
+
+
   const basicSetupFeatures = features.filter((feature) =>
-    ['Setup Technology Stack Selection', 'Develop Processes'].includes(feature.module)
+    ['Setup Technology Stack Selection', 'Develop Processes', 'Code Setup', 'DevOps Setup'].includes(feature.module)
   );
 
   const existingFeatures = features.filter(
     (feature) =>
-      !['Setup Technology Stack Selection', 'Develop Processes', 'Buffer', 'PMO Activities'].includes(
+      !['Setup Technology Stack Selection', 'Develop Processes', 'Code Setup', 'DevOps Setup', 'Buffer', 'PMO Activities'].includes(
         feature.module
-      ) && !basicSetupFeatures.includes(feature)
+      )
   );
 
   const additionalActivitiesFeatures = features.filter((feature) =>
@@ -95,6 +111,120 @@ export default function FeatureList({features, onFeatureUpdate, onFeatureDelete}
     setEditingFeatureId(null);
   };
 
+  const renderFeatureSection = (title: string, featureList: Feature[]) => {
+    if (featureList.length === 0) return null;
+    return (
+      <>
+        <h3 className="text-lg font-semibold mt-4 mb-2">{title}</h3>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Module</TableHead>
+              <TableHead>Feature Name</TableHead>
+              <TableHead>Multiplier</TableHead>
+              <TableHead>Size</TableHead>
+              <TableHead>Hours</TableHead>
+              <TableHead>Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {featureList.map((feature) => (
+              <TableRow key={feature.id}>
+                <TableCell>
+                  {editingFeatureId === feature.id ? (
+                    <Input
+                      type="text"
+                      value={editedModule}
+                      onChange={(e) => setEditedModule(e.target.value)}
+                    />
+                  ) : (
+                    feature.module
+                  )}
+                </TableCell>
+                <TableCell>
+                  {editingFeatureId === feature.id ? (
+                    <Input
+                      type="text"
+                      value={editedName}
+                      onChange={(e) => setEditedName(e.target.value)}
+                    />
+                  ) : (
+                    feature.name
+                  )}
+                </TableCell>
+                <TableCell>
+                  {editingFeatureId === feature.id ? (
+                    <Input
+                      type="number"
+                      value={editedMultiplier === undefined ? '' : editedMultiplier}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        setEditedMultiplier(value === '' ? undefined : parseFloat(value));
+                      }}
+                    />
+                  ) : (
+                    feature.multiplier
+                  )}
+                </TableCell>
+                <TableCell>
+                  {editingFeatureId === feature.id ? (
+                    <Select onValueChange={setEditedSize} value={editedSize}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a size" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="XS">XS</SelectItem>
+                        <SelectItem value="S">S</SelectItem>
+                        <SelectItem value="M">M</SelectItem>
+                        <SelectItem value="L">L</SelectItem>
+                        <SelectItem value="XL">XL</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  ) : (
+                    feature.size
+                  )}
+                </TableCell>
+                <TableCell>
+                  {editingFeatureId === feature.id ? (
+                    <Input
+                      type="number"
+                      value={editedHours === undefined ? '' : editedHours}
+                      readOnly // Hours are calculated
+                    />
+                  ) : (
+                    feature.hours
+                  )}
+                </TableCell>
+                <TableCell>
+                  {editingFeatureId === feature.id ? (
+                    <div className="flex space-x-2">
+                      <Button size="sm" onClick={() => handleSaveClick(feature.id)}>
+                        Save
+                      </Button>
+                      <Button size="sm" variant="ghost" onClick={handleCancelClick}>
+                        Cancel
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="flex space-x-2">
+                      <Button size="sm" onClick={() => handleEditClick(feature)}>
+                        Edit
+                      </Button>
+                      <Button size="sm" variant="destructive" onClick={() => onFeatureDelete(feature.id)}>
+                        Delete
+                      </Button>
+                    </div>
+                  )}
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </>
+    );
+  };
+
+
   return (
     <Card>
       <CardHeader>
@@ -102,358 +232,14 @@ export default function FeatureList({features, onFeatureUpdate, onFeatureDelete}
         <CardDescription>List of project-specific features and their estimations.</CardDescription>
       </CardHeader>
       <CardContent>
-        {/* Basic Setup Section */}
-        {basicSetupFeatures.length > 0 && (
-          <>
-            <h3 className="text-lg font-semibold mb-2">Basic Setup</h3>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Module</TableHead>
-                  <TableHead>Feature Name</TableHead>
-                  <TableHead>Multiplier</TableHead>
-                  <TableHead>Size</TableHead>
-                  <TableHead>Hours</TableHead>
-                  <TableHead>Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {basicSetupFeatures.map((feature) => (
-                  <TableRow key={feature.id}>
-                    <TableCell>
-                      {editingFeatureId === feature.id ? (
-                        <Input
-                          type="text"
-                          value={editedModule}
-                          onChange={(e) => setEditedModule(e.target.value)}
-                        />
-                      ) : (
-                        feature.module
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      {editingFeatureId === feature.id ? (
-                        <Input
-                          type="text"
-                          value={editedName}
-                          onChange={(e) => setEditedName(e.target.value)}
-                        />
-                      ) : (
-                        feature.name
-                      )}
-                    </TableCell>
-                     <TableCell>
-                      {editingFeatureId === feature.id ? (
-                        <Input
-                          type="number"
-                          value={editedMultiplier || ''}
-                          onChange={(e) => {
-                            const value = e.target.value;
-                            if (value === '' || /^[0-9]+(\.[0-9]*)?$/.test(value)) {
-                              setEditedMultiplier(value === '' ? undefined : parseFloat(value));
-                            }
-                          }}
-                        />
-                      ) : (
-                        feature.multiplier
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      {editingFeatureId === feature.id ? (
-                        <Select onValueChange={setEditedSize} value={editedSize}>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select a size" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="XS">XS</SelectItem>
-                            <SelectItem value="S">S</SelectItem>
-                            <SelectItem value="M">M</SelectItem>
-                            <SelectItem value="L">L</SelectItem>
-                            <SelectItem value="XL">XL</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      ) : (
-                        feature.size
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      {editingFeatureId === feature.id ? (
-                        <Input
-                          type="number"
-                          value={editedHours || ''}
-                          onChange={(e) => {
-                            const value = e.target.value;
-                            if (value === '' || /^[0-9]+(\.[0-9]*)?$/.test(value)) {
-                              setEditedHours(value === '' ? undefined : parseFloat(value));
-                            }
-                          }}
-                        />
-                      ) : (
-                        feature.hours
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      {editingFeatureId === feature.id ? (
-                        <>
-                          <Button size="sm" onClick={() => handleSaveClick(feature.id)}>
-                            Save
-                          </Button>
-                          <Button size="sm" variant="ghost" onClick={handleCancelClick}>
-                            Cancel
-                          </Button>
-                        </>
-                      ) : (
-                        <>
-                          <Button size="sm" onClick={() => handleEditClick(feature)}>
-                            Edit
-                          </Button>
-                          <Button size="sm" variant="destructive" onClick={() => onFeatureDelete(feature.id)}>
-                            Delete
-                          </Button>
-                        </>
-                      )}
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </>
-        )}
+        {renderFeatureSection("Basic Setup", basicSetupFeatures)}
+        {renderFeatureSection("Project Features", existingFeatures)}
+        {renderFeatureSection("Additional Activities", additionalActivitiesFeatures)}
 
-        {/* Existing Features Section */}
-        {existingFeatures.length > 0 && (
-          <>
-            <h3 className="text-lg font-semibold mt-4 mb-2">Existing Features</h3>
+        {features.length === 0 && (
             <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Module</TableHead>
-                  <TableHead>Feature Name</TableHead>
-                  <TableHead>Multiplier</TableHead>
-                  <TableHead>Size</TableHead>
-                  <TableHead>Hours</TableHead>
-                  <TableHead>Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {existingFeatures.map((feature) => (
-                  <TableRow key={feature.id}>
-                    <TableCell>
-                      {editingFeatureId === feature.id ? (
-                        <Input
-                          type="text"
-                          value={editedModule}
-                          onChange={(e) => setEditedModule(e.target.value)}
-                        />
-                      ) : (
-                        feature.module
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      {editingFeatureId === feature.id ? (
-                        <Input
-                          type="text"
-                          value={editedName}
-                          onChange={(e) => setEditedName(e.target.value)}
-                        />
-                      ) : (
-                        feature.name
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      {editingFeatureId === feature.id ? (
-                        <Input
-                          type="number"
-                          value={editedMultiplier || ''}
-                          onChange={(e) => {
-                            const value = e.target.value;
-                            if (value === '' || /^[0-9]+(\.[0-9]*)?$/.test(value)) {
-                              setEditedMultiplier(value === '' ? undefined : parseFloat(value));
-                            }
-                          }}
-                        />
-                      ) : (
-                        feature.multiplier
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      {editingFeatureId === feature.id ? (
-                        <Select onValueChange={setEditedSize} value={editedSize}>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select a size" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="XS">XS</SelectItem>
-                            <SelectItem value="S">S</SelectItem>
-                            <SelectItem value="M">M</SelectItem>
-                            <SelectItem value="L">L</SelectItem>
-                            <SelectItem value="XL">XL</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      ) : (
-                        feature.size
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      {editingFeatureId === feature.id ? (
-                        <Input
-                          type="number"
-                          value={editedHours || ''}
-                          onChange={(e) => {
-                            const value = e.target.value;
-                            if (value === '' || /^[0-9]+(\.[0-9]*)?$/.test(value)) {
-                              setEditedHours(value === '' ? undefined : parseFloat(value));
-                            }
-                          }}
-                        />
-                      ) : (
-                        feature.hours
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      {editingFeatureId === feature.id ? (
-                        <>
-                          <Button size="sm" onClick={() => handleSaveClick(feature.id)}>
-                            Save
-                          </Button>
-                          <Button size="sm" variant="ghost" onClick={handleCancelClick}>
-                            Cancel
-                          </Button>
-                        </>
-                      ) : (
-                        <>
-                          <Button size="sm" onClick={() => handleEditClick(feature)}>
-                            Edit
-                          </Button>
-                          <Button size="sm" variant="destructive" onClick={() => onFeatureDelete(feature.id)}>
-                            Delete
-                          </Button>
-                        </>
-                      )}
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
+                <TableCaption>No features added yet.</TableCaption>
             </Table>
-          </>
-        )}
-
-        {/* Additional Activities Section */}
-        {additionalActivitiesFeatures.length > 0 && (
-          <>
-            <h3 className="text-lg font-semibold mt-4 mb-2">Additional Activities</h3>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Module</TableHead>
-                  <TableHead>Feature Name</TableHead>
-                  <TableHead>Multiplier</TableHead>
-                  <TableHead>Size</TableHead>
-                  <TableHead>Hours</TableHead>
-                  <TableHead>Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {additionalActivitiesFeatures.map((feature) => (
-                  <TableRow key={feature.id}>
-                    <TableCell>
-                      {editingFeatureId === feature.id ? (
-                        <Input
-                          type="text"
-                          value={editedModule}
-                          onChange={(e) => setEditedModule(e.target.value)}
-                        />
-                      ) : (
-                        feature.module
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      {editingFeatureId === feature.id ? (
-                        <Input
-                          type="text"
-                          value={editedName}
-                          onChange={(e) => setEditedName(e.target.value)}
-                        />
-                      ) : (
-                        feature.name
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      {editingFeatureId === feature.id ? (
-                        <Input
-                          type="number"
-                          value={editedMultiplier || ''}
-                          onChange={(e) => {
-                            const value = e.target.value;
-                            if (value === '' || /^[0-9]+(\.[0-9]*)?$/.test(value)) {
-                              setEditedMultiplier(value === '' ? undefined : parseFloat(value));
-                            }
-                          }}
-                        />
-                      ) : (
-                        feature.multiplier
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      {editingFeatureId === feature.id ? (
-                        <Select onValueChange={setEditedSize} value={editedSize}>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select a size" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="XS">XS</SelectItem>
-                            <SelectItem value="S">S</SelectItem>
-                            <SelectItem value="M">M</SelectItem>
-                            <SelectItem value="L">L</SelectItem>
-                            <SelectItem value="XL">XL</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      ) : (
-                        feature.size
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      {editingFeatureId === feature.id ? (
-                        <Input
-                          type="number"
-                          value={editedHours || ''}
-                          onChange={(e) => {
-                            const value = e.target.value;
-                            if (value === '' || /^[0-9]+(\.[0-9]*)?$/.test(value)) {
-                              setEditedHours(value === '' ? undefined : parseFloat(value));
-                            }
-                          }}
-                        />
-                      ) : (
-                        feature.hours
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      {editingFeatureId === feature.id ? (
-                        <>
-                          <Button size="sm" onClick={() => handleSaveClick(feature.id)}>
-                            Save
-                          </Button>
-                          <Button size="sm" variant="ghost" onClick={handleCancelClick}>
-                            Cancel
-                          </Button>
-                        </>
-                      ) : (
-                        <>
-                          <Button size="sm" onClick={() => handleEditClick(feature)}>
-                            Edit
-                          </Button>
-                          <Button size="sm" variant="destructive" onClick={() => onFeatureDelete(feature.id)}>
-                            Delete
-                          </Button>
-                        </>
-                      )}
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </>
         )}
       </CardContent>
     </Card>
