@@ -26,10 +26,34 @@ interface Feature {
 }
 
 function ProjectPageContent() {
+  // 'use client'; // No need for a nested 'use client' if the parent (this file) already has it.
   const searchParams = useSearchParams();
   const router = useRouter();
 
-  const projectId = searchParams.get('projectId');
+  const [projectId, setProjectId] = useState<string | null>(null);
+  const [isLoadingProjectId, setIsLoadingProjectId] = useState(true); // To manage loading state for projectId
+
+  useEffect(() => {
+    // searchParams can be null initially on the client until Next.js hydration is complete
+    if (searchParams) {
+      const idFromParams = searchParams.get('projectId');
+      setProjectId(idFromParams);
+      setIsLoadingProjectId(false);
+    } else {
+      // If searchParams is null, it might mean we are on the very first client render
+      // or it's still loading. We can decide to set loading to false if no projectId is expected without params.
+      // For now, let's assume if searchParams is null and we haven't set projectId, we might still be loading.
+      // A more robust check could be to see if router.isReady (if using Pages Router, but not directly applicable here)
+      // or simply wait for searchParams to be non-null.
+      // For App Router, searchParams should become available. If it remains null and projectId is expected,
+      // it implies an issue or no param.
+      // If no projectId is in URL, idFromParams will be null, which is fine.
+       const idFromParams = searchParams?.get('projectId'); // Use optional chaining just in case
+       setProjectId(idFromParams || null); // Ensure projectId is null if not found
+       setIsLoadingProjectId(false);
+    }
+  }, [searchParams]);
+
 
   const [projectName, setProjectName] = useState('');
   const [projectOwner, setProjectOwner] = useState('');
@@ -80,9 +104,7 @@ function ProjectPageContent() {
   };
 
   const handleAISuggestion = async (featureName: string) => {
-    // Implement AI suggestion logic here, e.g., call an API
-    // For now, let's return a mock response
-    return new Promise((resolve) => {
+    return new Promise<{suggestedTShirtSize: string; totalHours: number; reasoning: string;}>((resolve) => {
       setTimeout(() => {
         resolve({
           suggestedTShirtSize: 'M',
@@ -99,16 +121,19 @@ function ProjectPageContent() {
         feature.id === featureId ? updatedFeature : feature
       )
     );
-  }, [setFeatures]);
+  }, []); // Removed setFeatures from dependency array as it's stable
 
   const handleFeatureDelete = useCallback((featureId: string) => {
     setFeatures(currentFeatures => currentFeatures.filter(feature => feature.id !== featureId));
-  }, [setFeatures]);
+  }, []); // Removed setFeatures from dependency array
 
+  if (isLoadingProjectId) {
+     return <div className="flex justify-center items-center h-screen"><p>Loading project data...</p></div>;
+  }
 
   return (
     <div className="container mx-auto p-4 space-y-4">
-      <h1 className="text-2xl font-bold">Frontend Estimator Pro</h1>
+      <h1 className="text-2xl font-bold">Frontend Estimator Pro {projectId ? `(Project ID: ${projectId})` : ''}</h1>
 
       <Tabs defaultValue="projectDetails" className="w-full">
         <TabsList>
@@ -297,3 +322,4 @@ export default function HomePage() {
     </Suspense>
   );
 }
+
